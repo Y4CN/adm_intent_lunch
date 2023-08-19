@@ -85,26 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          admInstalled(snapshot.data!),
+                          admInstalled(snapshot.data!) ? "Installed" : "Not installed",
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            String _url = "https://dl.musicdel.ir/tag/music/1401/12/09/Rauf%20Faik%20-%20kolybelnaya%20(320).mp3";
-                            // Uri _uri = Uri.parse(
-                                // "https://dl.rozmusic.com/Music/1402/05/28/Amin%20Rostami%20-%20Ba%20Mani.mp3");
-                            // if (await canLaunchUrl(_uri)) {
-                            //   launchUrl(_uri,mode: LaunchMode.externalApplication);
-                            // }
-                                
-                            if (Platform.isAndroid) {
-                              AndroidIntent intent = AndroidIntent(
-                                action: 'action_main',
-                                package: "com.dv.adm",
-                                componentName: "com.dv.adm.AEditor",
-                                arguments: {'android.intent.extra.TEXT': _url},
-                              );
-                              await intent.launch();
-                            }
+                            String _url =
+                                "https://dl.musicdel.ir/tag/music/1401/12/09/Rauf%20Faik%20-%20kolybelnaya%20(320).mp3";
                           },
                           child: Text("Send Link To ADM"),
                         ),
@@ -115,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             );
           }
-          return Center(
+          return const Center(
             child: Text('Out Of Rage'),
           );
         },
@@ -124,11 +110,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-String admInstalled(List<AppInfo> infoApp) {
+
+
+
+
+
+//Az Injas 
+
+
+bool admInstalled(List<AppInfo> infoApp) {
   for (var element in infoApp) {
-    return element.packageName == "com.dv.adm"
-        ? "ADM is Installed"
-        : "ADM is not Installed";
+    return element.packageName == "com.dv.adm" ? true : false;
   }
-  return "";
+  return false;
+}
+
+Future<void> downloadFile(String url) async {
+  List<AppInfo> listAppinfo = await InstalledApps.getInstalledApps();
+
+  if (admInstalled(listAppinfo)) {
+    if (Platform.isAndroid) {
+      AndroidIntent intent = AndroidIntent(
+        action: 'action_main',
+        package: "com.dv.adm",
+        componentName: "com.dv.adm.AEditor",
+        arguments: {'android.intent.extra.TEXT': url},
+      );
+      await intent.launch();
+    }
+  } else {
+    Uri _uri = Uri.parse(url);
+    if (await canLaunchUrl(_uri)) {
+      launchUrl(_uri, mode: LaunchMode.externalApplication);
+    }
+  }
 }
